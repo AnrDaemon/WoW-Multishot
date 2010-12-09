@@ -1,0 +1,21 @@
+## Interface: 40000
+## Title: Multishot
+## Author: @project-author@
+## Version: @project-version@
+## Notes: Taking screenshots of memorable events in your World of Warcraft career.
+## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibBossIDs-1.0
+## SavedVariables: MultishotConfig
+## X-WoWI-ID: 9590
+
+#@no-lib-strip@
+libs\data.xml
+#@end-no-lib-strip@
+
+locales\data.xml
+
+dbRares.lua
+dbWhitelist.lua
+dbBlacklist.lua
+
+Multishot.lua
+Config.lua
