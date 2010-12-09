@@ -78,6 +78,7 @@ end
 function Multishot:CustomScreenshot(strDebug)
   self:Debug(strDebug)
   if MultishotConfig.close then CloseAllWindows() end
+  if MultishotConfig.charpane then ToggleCharacter("PaperDollFrame") end
   if MultishotConfig.played and strDebug ~= "PLAYER_LEVEL_UP" then RequestTimePlayed() end
   self:RegisterEvent("SCREENSHOT_SUCCEEDED")
   if MultishotConfig.uihide and (string.find(strDebug, "PLAYER_REGEN_ENABLED") or string.find(strDebug, "UNIT_DIED") or string.find(strDebug, "PARTY_KILL") or string.find(strDebug, "PLAYER_LEVEL_UP")) then

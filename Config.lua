@@ -1,5 +1,5 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Multishot")
-local dataDefaults = { levelup = true, achievement = true, party = true, raid = true, rares = true, repchange = true, delay1 = 1.2,  delay2 = 2, debug = false, trade = true, firstkill = false, close = false, uihide = false, played = false, history = {} }
+local dataDefaults = { levelup = true, achievement = true, party = true, raid = true, rares = true, repchange = true, delay1 = 1.2,  delay2 = 2, debug = false, trade = true, firstkill = false, close = false, uihide = false, played = false, charpane = false, history = {} }
 local dataOptions = {
   type = "group",
   name = "Multishot",
@@ -114,21 +114,27 @@ local dataOptions = {
       name = L["played"],
       get = function() return MultishotConfig.played end, 
       set = function(_,v) MultishotConfig.played = v end },
-    header4 = {
+    charpane = {
       order = 19,
+      type = "toggle",
+      name = L["charpane"],
+      get = function() return MultishotConfig.charpane end, 
+      set = function(_,v) MultishotConfig.charpane = v end },
+    header4 = {
+      order = 20,
       type = "header",
       name = L["various"] },
     debug = {
-      order = 20,
+      order = 21,
       type = "toggle",
       name = L["debug"],
       get = function() return MultishotConfig.debug end, 
       set = function(_,v) MultishotConfig.debug = v end },
     reset = {
-      order = 21,
+      order = 22,
       type = "execute",
       name = L["reset"],
-      func = function() MultishotConfig.history = {} end }, 
+      func = function() MultishotConfig.history = {} end },
 } }
 
 function Multishot:OnInitialize()
