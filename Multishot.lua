@@ -49,7 +49,7 @@ function Multishot:COMBAT_LOG_EVENT_UNFILTERED(strEvent, ...)
     local inInstance, instanceType = IsInInstance()
     if not (sourceGuid == UnitGUID("player") and MultishotConfig.rares and Multishot_dbRares[currentId]) and strType == "PARTY_KILL" then return end
     if not ((instanceType == "party" and MultishotConfig.party) or (instanceType == "raid" and MultishotConfig.raid)) then return end
-    if not (Multishot_dbWhitelist[currentId] or Multishot_dbBoss[currentId]) or Multishot_dbBlacklist[currentId] then return end
+    if not (Multishot_dbWhitelist[currentId] or Multishot_dbCataclysm[currentId] or Multishot_dbBoss[currentId]) or Multishot_dbBlacklist[currentId] then return end
     if MultishotConfig.firstkill and MultishotConfig.history[player .. currentId] then return end
     MultishotConfig.history[player .. currentId] = true
     if UnitIsDead("player") then
