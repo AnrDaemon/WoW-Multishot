@@ -5,7 +5,7 @@ Multishot_dbBoss = LibStub("LibBossIDs-1.0").BossIDs
 
 local isEnabled, isDelayed, oldalpha
 local strMatch = string.gsub(FACTION_STANDING_CHANGED, "%%%d?%$?s", "(.+)")
-local player = (UnitName("player"))
+local player = UnitName("player")
 
 function Multishot:OnEnable()
   self:RegisterEvent("CHAT_MSG_SYSTEM")
@@ -13,12 +13,22 @@ function Multishot:OnEnable()
   self:RegisterEvent("ACHIEVEMENT_EARNED")
   self:RegisterEvent("TRADE_ACCEPT_UPDATE")
   self:RegisterEvent("PLAYER_REGEN_ENABLED")
+--  self:RegisterEvent("GUILD_PERK_UPDATE")
+--  self:RegisterEvent("GUILD_ACHIEVEMENT_UPDATE")
   self:RegisterEvent("SCREENSHOT_FAILED", "Debug")
   self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
   self:RegisterChatCommand("multishot", function()
     InterfaceOptionsFrame_OpenToCategory(Multishot.PrefPane)
   end)
 end
+
+--function Multishot:GUILD_PERK_UPDATE(strEvent)
+--  if MultishotConfig.guildachievement then self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) end
+--end
+
+--function Multishot:GUILD_ACHIEVEMENT_UPDATE(strEvent)
+--  if MultishotConfig.guildlevelup then self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) end
+--end
 
 function Multishot:PLAYER_LEVEL_UP(strEvent)
   if MultishotConfig.levelup then self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) end
@@ -77,8 +87,8 @@ end
 
 function Multishot:CustomScreenshot(strDebug)
   self:Debug(strDebug)
-  if MultishotConfig.close then CloseAllWindows() end
   if MultishotConfig.charpane then ToggleCharacter("PaperDollFrame") end
+  if MultishotConfig.close and strDebug ~= "TRADE_ACCEPT_UPDATE" then CloseAllWindows() end
   if MultishotConfig.played and strDebug ~= "PLAYER_LEVEL_UP" then RequestTimePlayed() end
   self:RegisterEvent("SCREENSHOT_SUCCEEDED")
   if MultishotConfig.uihide and (string.find(strDebug, "PLAYER_REGEN_ENABLED") or string.find(strDebug, "UNIT_DIED") or string.find(strDebug, "PARTY_KILL") or string.find(strDebug, "PLAYER_LEVEL_UP")) then
