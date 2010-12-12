@@ -1,11 +1,11 @@
 Multishot = LibStub("AceAddon-3.0"):NewAddon("Multishot", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
 MultishotConfig = {}
-Multishot_dbBoss = LibStub("LibBossIDs-1.0").BossIDs
+BossIds = LibStub("LibBossIDs-1.0").BossIDs
+RareIds = LibStub("LibRareIds-1.0").Data
 
 local isEnabled, isDelayed, oldalpha
 local strMatch = string.gsub(FACTION_STANDING_CHANGED, "%%%d?%$?s", "(.+)")
-local player = UnitName("player")
 
 function Multishot:OnEnable()
   self:RegisterEvent("CHAT_MSG_SYSTEM")
@@ -13,22 +13,12 @@ function Multishot:OnEnable()
   self:RegisterEvent("ACHIEVEMENT_EARNED")
   self:RegisterEvent("TRADE_ACCEPT_UPDATE")
   self:RegisterEvent("PLAYER_REGEN_ENABLED")
---  self:RegisterEvent("GUILD_PERK_UPDATE")
---  self:RegisterEvent("GUILD_ACHIEVEMENT_UPDATE")
   self:RegisterEvent("SCREENSHOT_FAILED", "Debug")
   self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
   self:RegisterChatCommand("multishot", function()
     InterfaceOptionsFrame_OpenToCategory(Multishot.PrefPane)
   end)
 end
-
---function Multishot:GUILD_PERK_UPDATE(strEvent)
---  if MultishotConfig.guildachievement then self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) end
---end
-
---function Multishot:GUILD_ACHIEVEMENT_UPDATE(strEvent)
---  if MultishotConfig.guildlevelup then self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) end
---end
 
 function Multishot:PLAYER_LEVEL_UP(strEvent)
   if MultishotConfig.levelup then self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) end
@@ -57,11 +47,11 @@ function Multishot:COMBAT_LOG_EVENT_UNFILTERED(strEvent, ...)
   local currentId = tonumber("0x" .. string.sub(destGuid, 7, 10))
   if strType == "UNIT_DIED" or strType == "PARTY_KILL" then
     local inInstance, instanceType = IsInInstance()
-    if not (sourceGuid == UnitGUID("player") and MultishotConfig.rares and Multishot_dbRares[currentId]) and strType == "PARTY_KILL" then return end
+    if not (sourceGuid == UnitGUID("player") and MultishotConfig.rares and RareIds[currentId]) and strType == "PARTY_KILL" then return end
     if not ((instanceType == "party" and MultishotConfig.party) or (instanceType == "raid" and MultishotConfig.raid)) then return end
-    if not (Multishot_dbWhitelist[currentId] or Multishot_dbCataclysm[currentId] or Multishot_dbBoss[currentId]) or Multishot_dbBlacklist[currentId] then return end
-    if MultishotConfig.firstkill and MultishotConfig.history[player .. currentId] then return end
-    MultishotConfig.history[player .. currentId] = true
+    if not (Multishot_dbWhitelist[currentId] or BossIds[currentId]) or Multishot_dbBlacklist[currentId] then return end
+    if MultishotConfig.firstkill and MultishotConfig.history[UnitName("player") .. currentId] then return end
+    MultishotConfig.history[UnitName("player") .. currentId] = true
     if UnitIsDead("player") then
       self:PLAYER_REGEN_ENABLED(strType)
     else
@@ -78,11 +68,11 @@ function Multishot:PLAYER_REGEN_ENABLED(strEvent)
 end
 
 function Multishot:SCREENSHOT_SUCCEEDED(Q)
-  if oldalpha and oldalpha > 0 then
-  	UIParent:SetAlpha(oldalpha)
-  	oldalpha = nil
-  end
   self:UnregisterEvent("SCREENSHOT_SUCCEEDED")
+  if oldalpha and oldalpha > 0 then
+    UIParent:SetAlpha(oldalpha)
+    oldalpha = nil
+  end
 end
 
 function Multishot:CustomScreenshot(strDebug)

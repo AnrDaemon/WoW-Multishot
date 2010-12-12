@@ -3,7 +3,7 @@
 ## Author: @project-author@
 ## Version: @project-version@
 ## Notes: Taking screenshots of memorable events in your World of Warcraft career.
-## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibBossIDs-1.0
+## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibBossIDs-1.0, LibRareIds-1.0
 ## SavedVariables: MultishotConfig
 ## X-WoWI-ID: 9590
 
@@ -13,8 +13,6 @@ libs\data.xml
 
 locales\data.xml
 
-dbRares.lua
-dbCataclysm.lua
 dbWhitelist.lua
 dbBlacklist.lua
 
