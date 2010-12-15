@@ -4,7 +4,7 @@ MultishotConfig = {}
 BossIds = LibStub("LibBossIDs-1.0").BossIDs
 RareIds = LibStub("LibRareIds-1.0").Data
 
-local isEnabled, isDelayed, oldalpha
+local isEnabled, isDelayed, intAlpha
 local strMatch = string.gsub(FACTION_STANDING_CHANGED, "%%%d?%$?s", "(.+)")
 
 function Multishot:OnEnable()
@@ -69,9 +69,9 @@ end
 
 function Multishot:SCREENSHOT_SUCCEEDED(Q)
   self:UnregisterEvent("SCREENSHOT_SUCCEEDED")
-  if oldalpha and oldalpha > 0 then
-    UIParent:SetAlpha(oldalpha)
-    oldalpha = nil
+  if intAlpha and intAlpha > 0 then
+    UIParent:SetAlpha(intAlpha)
+    intAlpha = nil
   end
 end
 
@@ -82,7 +82,7 @@ function Multishot:CustomScreenshot(strDebug)
   if MultishotConfig.played and strDebug ~= "PLAYER_LEVEL_UP" then RequestTimePlayed() end
   self:RegisterEvent("SCREENSHOT_SUCCEEDED")
   if MultishotConfig.uihide and (string.find(strDebug, "PLAYER_REGEN_ENABLED") or string.find(strDebug, "UNIT_DIED") or string.find(strDebug, "PARTY_KILL") or string.find(strDebug, "PLAYER_LEVEL_UP")) then
-    oldalpha = UIParent:GetAlpha()
+    intAlpha = UIParent:GetAlpha()
     UIParent:SetAlpha(0)
   end
   Screenshot()
