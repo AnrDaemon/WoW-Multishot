@@ -8,13 +8,14 @@ local isEnabled, isDelayed, intAlpha
 local strMatch = string.gsub(FACTION_STANDING_CHANGED, "%%%d?%$?s", "(.+)")
 
 function Multishot:OnEnable()
-  self:RegisterEvent("CHAT_MSG_SYSTEM")
   self:RegisterEvent("PLAYER_LEVEL_UP")
+  self:RegisterEvent("UNIT_GUILD_LEVEL")
   self:RegisterEvent("ACHIEVEMENT_EARNED")
   self:RegisterEvent("TRADE_ACCEPT_UPDATE")
-  self:RegisterEvent("PLAYER_REGEN_ENABLED")
-  self:RegisterEvent("SCREENSHOT_FAILED", "Debug")
+  self:RegisterEvent("CHAT_MSG_SYSTEM")
   self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+  self:RegisterEvent("PLAYER_REGEN_ENABLED")  
+  self:RegisterEvent("SCREENSHOT_FAILED", "Debug")
   self:RegisterChatCommand("multishot", function()
     InterfaceOptionsFrame_OpenToCategory(Multishot.PrefPane)
   end)
@@ -24,22 +25,21 @@ function Multishot:PLAYER_LEVEL_UP(strEvent)
   if MultishotConfig.levelup then self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) end
 end
 
-function Multishot:ACHIEVEMENT_EARNED(strEvent)
-  if MultishotConfig.achievement then self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) end
+function Multishot:UNIT_GUILD_LEVEL(strEvent, strUnit)
+  if MultishotConfig.guildlevelup and strUnit == "player" then self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) end
+end
+
+function Multishot:ACHIEVEMENT_EARNED(strEvent, intId)
+  if MultishotConfig.guildachievement and select(12, GetAchievementInfo(intId)) then self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) end
+  if MultishotConfig.achievement and not select(12, GetAchievementInfo(intId)) then self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) end
 end
 
 function Multishot:TRADE_ACCEPT_UPDATE(strEvent, strPlayer, strTarget)
-  if ((strPlayer == 1 and strTarget == 0) or (strPlayer == 0 and strTarget == 1)) and MultishotConfig.trade then
-    self:CustomScreenshot(strEvent)
-  end
+  if MultishotConfig.trade and ((strPlayer == 1 and strTarget == 0) or (strPlayer == 0 and strTarget == 1)) then self:CustomScreenshot(strEvent) end
 end
 
 function Multishot:CHAT_MSG_SYSTEM(strEvent, strMessage)
-  if MultishotConfig.repchange then
-    if string.match(strMessage, strMatch) then
-      self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) 
-    end
-  end
+  if MultishotConfig.repchange and string.match(strMessage, strMatch) then self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) end
 end
 
 function Multishot:COMBAT_LOG_EVENT_UNFILTERED(strEvent, ...)
@@ -61,26 +61,20 @@ function Multishot:COMBAT_LOG_EVENT_UNFILTERED(strEvent, ...)
 end
 
 function Multishot:PLAYER_REGEN_ENABLED(strEvent)
-  if isDelayed then 
-    self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay2, strEvent .. isDelayed)
-    isDelayed = nil
-  end
+  if isDelayed then self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay2, strEvent) isDelayed = nil end
 end
 
-function Multishot:SCREENSHOT_SUCCEEDED(Q)
+function Multishot:SCREENSHOT_SUCCEEDED(strEvent)
   self:UnregisterEvent("SCREENSHOT_SUCCEEDED")
-  if intAlpha and intAlpha > 0 then
-    UIParent:SetAlpha(intAlpha)
-    intAlpha = nil
-  end
+  if intAlpha and intAlpha > 0 then UIParent:SetAlpha(intAlpha) intAlpha = nil end
 end
 
 function Multishot:CustomScreenshot(strDebug)
   self:Debug(strDebug)
+  self:RegisterEvent("SCREENSHOT_SUCCEEDED")
   if MultishotConfig.charpane then ToggleCharacter("PaperDollFrame") end
   if MultishotConfig.close and strDebug ~= "TRADE_ACCEPT_UPDATE" then CloseAllWindows() end
   if MultishotConfig.played and strDebug ~= "PLAYER_LEVEL_UP" then RequestTimePlayed() end
-  self:RegisterEvent("SCREENSHOT_SUCCEEDED")
   if MultishotConfig.uihide and (string.find(strDebug, "PLAYER_REGEN_ENABLED") or string.find(strDebug, "UNIT_DIED") or string.find(strDebug, "PARTY_KILL") or string.find(strDebug, "PLAYER_LEVEL_UP")) then
     intAlpha = UIParent:GetAlpha()
     UIParent:SetAlpha(0)
