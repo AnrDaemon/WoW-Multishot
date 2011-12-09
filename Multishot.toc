@@ -1,10 +1,11 @@
-## Interface: 40000
+## Interface: 40300
 ## Title: Multishot
 ## Author: @project-author@
 ## Version: @project-version@
-## Notes: Taking screenshots of memorable events in your World of Warcraft career.
+## Notes: Takes screenshots of memorable events in your World of Warcraft career.
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibBossIDs-1.0, LibRareIds-1.0
 ## SavedVariables: MultishotConfig
+## SavedVariablesPerCharacter: MultishotPlayerScreens
 ## X-WoWI-ID: 9590
 
 #@no-lib-strip@

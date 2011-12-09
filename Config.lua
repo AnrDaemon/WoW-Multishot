@@ -147,7 +147,8 @@ local dataOptions = {
       type = "execute",
       name = L["reset"],
       func = function() MultishotConfig.history = {} end },
-} }
+  }
+}
 
 function Multishot:OnInitialize()
   LibStub("AceConfig-3.0"):RegisterOptionsTable("Multishot", dataOptions)
