@@ -143,7 +143,7 @@ local dataOptions = {
     	order = 23,
     	type = "input",
     	name = L["watermarkformat"],
-    	desc = L["set the format for watermark text"]..L["\n$n = name \n$c = class \n$l = level \n$z = zone \n$r = realm \n$d = date \n$b = line change"],
+    	desc = L["set the format for watermark text"]..L["watermarkformattext"],
     	usage = L["clear the text and press Enter to restore defaults."],
     	get = function() return MultishotConfig.watermarkformat end,
     	set = function(_,v)
