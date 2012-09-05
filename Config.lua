@@ -1,5 +1,6 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Multishot")
-local dataDefaults = { levelup = true, achievement = true, party = true, raid = true, rares = true, repchange = true, delay1 = 1.2,  delay2 = 2, debug = false, trade = true, firstkill = false, close = false, uihide = false, played = false, charpane = false, guildlevelup = true, guildachievement = true, history = {} }
+
+local dataDefaults = { levelup = true, achievement = true, party = true, raid = true, rares = true, repchange = true, delay1 = 1.2,  delay2 = 2, debug = false, trade = true, firstkill = false, close = false, uihide = false, played = false, charpane = false, guildlevelup = true, guildachievement = true, history = {}, delay3 = 30, timeLineEnable = false, watermark = true, watermarkformat = "$n($l) $c $b$z - $d$b$r", watermarkanchor = "TOP" }
 local dataOptions = {
   type = "group",
   name = "Multishot",
@@ -132,23 +133,80 @@ local dataOptions = {
       name = L["charpane"],
       get = function() return MultishotConfig.charpane end, 
       set = function(_,v) MultishotConfig.charpane = v end },
+    watermark = {
+    	order = 22,
+    	type = "toggle",
+    	name = L["watermark"],
+    	get = function() return MultishotConfig.watermark end,
+    	set = function(_,v) MultishotConfig.watermark = v end },
+    watermarkformat = {
+    	order = 23,
+    	type = "input",
+    	name = L["watermarkformat"],
+    	desc = L["set the format for watermark text"]..L["\n$n = name \n$c = class \n$l = level \n$z = zone \n$r = realm \n$d = date \n$b = line change"],
+    	usage = L["clear the text and press Enter to restore defaults."],
+    	get = function() return MultishotConfig.watermarkformat end,
+    	set = function(_,v)
+    		print(tostring(v))
+    		if v == "" or not (v):find("[%w%p]+") or (v):find("\\n") then -- or (v):find("$[^nclzrdb]")
+    			v = "$n($l) $c $b$z - $d$b$r"
+    		end
+    		MultishotConfig.watermarkformat = v
+    	end	},
+    watermarkanchor = {
+    	order = 24,
+    	type = "select",
+    	name = L["watermarkanchor"],
+    	values = {["TOP"] = L["TOP"], ["TOPLEFT"] = L["TOPLEFT"], ["TOPRIGHT"] = L["TOPRIGHT"], ["BOTTOMLEFT"] = L["BOTTOMLEFT"], ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"]}, -- add to localization
+    	get = function() return MultishotConfig.watermarkanchor end,
+    	set = function(_,v) MultishotConfig.watermarkanchor = v end },
     header4 = {
-      order = 22,
+      order = 25,
       type = "header",
       name = L["various"] },
     debug = {
-      order = 23,
+      order = 26,
       type = "toggle",
       name = L["debug"],
       get = function() return MultishotConfig.debug end, 
       set = function(_,v) MultishotConfig.debug = v end },
     reset = {
-      order = 24,
+      order = 27,
       type = "execute",
       name = L["reset"],
       func = function() MultishotConfig.history = {} end },
+	header5 = {
+      order = 28,
+      type = "header",
+      name = L["timeline"] },
+	timeline = {
+      order = 29,
+      type = "toggle",
+      name = L["timeLineEnable"],
+      get = function() return MultishotConfig.timeLineEnable end, 
+      set = function(_,v) 
+      	MultishotConfig.timeLineEnable = v
+      	Multishot:TimeLineConfig(v)
+      end },
+	delay3 = {
+      order = 30,
+      type = "range",
+      name = L["delayTimeline"],
+      min = 15, max = 90, step = 5,
+      get = function() return MultishotConfig.delay3 end, 
+      set = function(_,v) MultishotConfig.delay3 = v end },
   }
 }
+
+function Multishot:TimeLineConfig(enable)
+	if enable then 
+  	Multishot.timeLineTimer = Multishot:ScheduleRepeatingTimer("TimeLineProgress",5) 
+  else 
+  	if Multishot.timeLineTimer then
+  		Multishot:CancelTimer(Multishot.timeLineTimer)
+		end
+	end
+end
 
 function Multishot:OnInitialize()
   LibStub("AceConfig-3.0"):RegisterOptionsTable("Multishot", dataOptions)

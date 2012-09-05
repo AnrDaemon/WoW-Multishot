@@ -1,4 +1,5 @@
 Multishot = LibStub("AceAddon-3.0"):NewAddon("Multishot", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("Multishot")
 
 MultishotConfig = {}
 Multishot.BossID = LibStub("LibBossIDs-1.0").BossIDs
@@ -8,7 +9,10 @@ local isEnabled, isDelayed
 local strMatch = string.gsub(FACTION_STANDING_CHANGED, "%%%d?%$?s", "(.+)")
 local prefix = "WoWScrnShot_"
 local player = (UnitName("player"))
+local class = (UnitClass("player"))
+local realm = GetRealmName()
 local extension, intAlpha
+local timeLineStart, timeLineElapsed
 
 function Multishot:OnEnable()
   self:RegisterEvent("PLAYER_LEVEL_UP")
@@ -19,8 +23,14 @@ function Multishot:OnEnable()
   self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
   self:RegisterEvent("PLAYER_REGEN_ENABLED")
   self:RegisterEvent("SCREENSHOT_FAILED", "Debug")
+  if MultishotConfig.timeLineEnable then
+  	self.timeLineTimer = self:ScheduleRepeatingTimer("TimeLineProgress",5)
+  	timeLineStart, timeLineElapsed = GetTime(), 0
+  end
   local ssformat = GetCVar("screenshotFormat")
   extension = (ssformat == "tga") and ".tga" or (ssformat == "png") and ".png" or ".jpg"
+  Multishot.watermarkFrame = Multishot.watermarkFrame or Multishot:CreateWatermark()
+    
   self:RegisterChatCommand("multishot", function()
     InterfaceOptionsFrame_OpenToCategory(Multishot.PrefPane)
   end)
@@ -54,6 +64,7 @@ function Multishot:CHAT_MSG_SYSTEM(strEvent, strMessage)
 end
 
 function Multishot:TIME_PLAYED_MSG(strEvent, total, thislevel)
+	if MultishotConfig.timeLineEnable then timeLineStart,timeLineElapsed = GetTime(),0 end
   TakeScreenshot()
   self:UnregisterEvent("TIME_PLAYED_MSG")
 end
@@ -97,22 +108,103 @@ function Multishot:SCREENSHOT_SUCCEEDED(strEvent)
     UIParent:SetAlpha(intAlpha)
     intAlpha = nil
   end
+  self:RefreshWatermark(false)
   self:UnregisterEvent("SCREENSHOT_SUCCEEDED")
+end
+
+function Multishot:RefreshWatermark(show)
+	if not show then Multishot.watermarkFrame:Hide() return end
+
+	local anchor = MultishotConfig.watermarkanchor
+	Multishot.watermarkFrame:ClearAllPoints()
+	Multishot.watermarkFrame:SetPoint(anchor)
+
+	Multishot.watermarkFrame.Text:ClearAllPoints()
+	Multishot.watermarkFrame.Text:SetPoint("TOP",Multishot.watermarkFrame,"TOP")
+	Multishot.watermarkFrame.Text:SetJustifyH("CENTER")
+	
+	local text = MultishotConfig.watermarkformat
+	local level = UnitLevel("player")
+	local zone = GetRealZoneText()
+	local tdate = date()
+
+	text = text:gsub("$n", player)
+	text = text:gsub("$l", level)
+	text = text:gsub("$c", class)
+	text = text:gsub("$z", zone)
+	text = text:gsub("$r", realm)
+	text = text:gsub("$d", tdate)
+	text = text:gsub("$b","\n" )
+	
+	Multishot.watermarkFrame.Text:SetText(YELLOW_FONT_COLOR_CODE..text..FONT_COLOR_CODE_CLOSE)
+	
+	Multishot.watermarkFrame:Show()
+end
+
+function Multishot:CreateWatermark()
+	local f = CreateFrame("Frame", "MultishotWatermark", WorldFrame)
+	f:SetFrameStrata("BACKGROUND")
+	f:SetFrameLevel(0)
+	f:SetWidth(350)
+	f:SetHeight(100)
+	
+	f.Text = f:CreateFontString(nil, "OVERLAY")
+	f.Text:SetShadowOffset(1, -1)
+	f.Text:SetFont("Fonts\\NIM_____.ttf", 18, "OUTLINE") -- STANDARD_TEXT_FONT
+	
+	return f
+end
+
+function Multishot:TimeLineProgress()
+	local now = GetTime()
+	timeLineStart = timeLineStart or now
+	timeLineElapsed = timeLineElapsed or 0
+	if UnitIsAFK("player") then
+		timeLineStart = now - timeLineElapsed
+	else
+		timeLineElapsed = now - timeLineStart
+	end
+	if timeLineElapsed >= (MultishotConfig.delay3 * 60) then
+		self:ScheduleTimer("CustomScreenshot", 0.2, L["timeline"])
+	end
 end
 
 function Multishot:CustomScreenshot(strDebug)
   self:Debug(strDebug)
   self:RegisterEvent("SCREENSHOT_SUCCEEDED")
-  if MultishotConfig.charpane then ToggleCharacter("PaperDollFrame") end
+  if MultishotConfig.charpane and not PaperDollFrame:IsVisible() then 
+  	ToggleCharacter("PaperDollFrame")
+  	if not PaperDollFrame:IsVisible() then
+  		self:ScheduleTimer("CustomScreenshot", 0.2, "RETRY")
+  	end
+  end
   if MultishotConfig.close and strDebug ~= "TRADE_ACCEPT_UPDATE" then CloseAllWindows() end
-  if MultishotConfig.uihide and (string.find(strDebug, "PLAYER_REGEN_ENABLED") or string.find(strDebug, "UNIT_DIED") or string.find(strDebug, "PARTY_KILL") or string.find(strDebug, "PLAYER_LEVEL_UP")) then
+  if MultishotConfig.uihide and 
+  (string.find(strDebug, "PLAYER_REGEN_ENABLED") 
+  or string.find(strDebug, "UNIT_DIED") 
+  or string.find(strDebug, "PARTY_KILL") 
+  or string.find(strDebug, "PLAYER_LEVEL_UP") 
+  or string.find(strDebug, L["timeline"])
+  or string.find(strDebug, KEY_BINDING)) then
     intAlpha = UIParent:GetAlpha()
     UIParent:SetAlpha(0)
   end
-  if MultishotConfig.played and (strDebug == "PLAYER_LEVEL_UP" or strDebug == "ACHIEVEMENT_EARNED" or strDebug == "CHAT_MSG_SYSTEM") and strDebug ~= "TIME_PLAYED_MSG" then RequestTimePlayed() self:RegisterEvent("TIME_PLAYED_MSG") return end
+  if MultishotConfig.watermark then self:RefreshWatermark(true) end
+  if MultishotConfig.played and (strDebug == "PLAYER_LEVEL_UP" or strebug == "ACHIEVEMENT_EARNED" or strDebug == "CHAT_MSG_SYSTEM") and strDebug ~= "TIME_PLAYED_MSG" then RequestTimePlayed() self:RegisterEvent("TIME_PLAYED_MSG") return end
+  if MultishotConfig.timeLineEnable then timeLineStart,timeLineElapsed = GetTime(),0 end
   TakeScreenshot()
 end
 
 function Multishot:Debug(strMessage)
+	if strMessage == "SCREENSHOT_FAILED" then
+		if intAlpha and intAlpha > 0 then
+			UIParent:SetAlpha(intAlpha)
+			intAlpha = nil
+		end
+		self:RefreshWatermark(false)
+	end
   if MultishotConfig.debug then self:Print(strMessage) end
 end
+
+BINDING_HEADER_MULTISHOT = "Multishot"
+BINDING_NAME_MULTISHOTSCREENSHOT = L["Custom screenshot"]
