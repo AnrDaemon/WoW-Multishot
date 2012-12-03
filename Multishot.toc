@@ -1,6 +1,6 @@
-## Interface: 50001
+## Interface: 50100
 ## Title: Multishot
-## Author: @project-author@
+## Author: dlui & dridzt
 ## Version: @project-version@
 ## Notes: Takes screenshots of memorable events in your World of Warcraft career.
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibBossIDs-1.0, LibRareIds-1.0
