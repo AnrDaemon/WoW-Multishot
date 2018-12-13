@@ -16,7 +16,7 @@ local timeLineStart, timeLineElapsed
 
 function Multishot:OnEnable()
   self:RegisterEvent("PLAYER_LEVEL_UP")
-  self:RegisterEvent("UNIT_GUILD_LEVEL")
+--  self:RegisterEvent("UNIT_GUILD_LEVEL")
   self:RegisterEvent("ACHIEVEMENT_EARNED")
   self:RegisterEvent("CHALLENGE_MODE_COMPLETED")
   self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
@@ -24,7 +24,7 @@ function Multishot:OnEnable()
   self:RegisterEvent("CHAT_MSG_SYSTEM")
   self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
   self:RegisterEvent("PLAYER_REGEN_ENABLED")
-  self:RegisterEvent("GARISSON_BUILDING_ACTIVATED")
+  self:RegisterEvent("GARRISON_BUILDING_ACTIVATED", "GARISSON_BUILDING_ACTIVATED")
   self:RegisterEvent("SCREENSHOT_FAILED", "Debug")
   if MultishotConfig.timeLineEnable then
     self.timeLineTimer = self:ScheduleRepeatingTimer("TimeLineProgress",5)
