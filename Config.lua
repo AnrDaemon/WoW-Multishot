@@ -1,93 +1,93 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("Multishot")
 
 local GetFonts = function()
-	local fonts = {}
-	fonts[STANDARD_TEXT_FONT] = "Standard"
-	fonts[(NumberFontNormal:GetFont())] = "NumberFontNormal"
-	fonts[(NumberFontNormalHuge:GetFont())] = "NumberFontNormalHuge"
-	fonts[(ItemTextFontNormal:GetFont())] = "ItemTextFontNormal"
+  local fonts = {}
+  fonts[STANDARD_TEXT_FONT] = "Standard"
+  fonts[(NumberFontNormal:GetFont())] = "NumberFontNormal"
+  fonts[(NumberFontNormalHuge:GetFont())] = "NumberFontNormalHuge"
+  fonts[(ItemTextFontNormal:GetFont())] = "ItemTextFontNormal"
 
-	local LSM3 = LSM3 or LibStub("LibSharedMedia-3.0")
-	if LSM3 then
-		for index, fontName in pairs(LSM3:List("font")) do
-			fonts[LSM3:Fetch("font", fontName)] = fontName
-		end
-	end
-	return fonts
+  local LSM3 = LSM3 or LibStub("LibSharedMedia-3.0")
+  if LSM3 then
+    for index, fontName in pairs(LSM3:List("font")) do
+      fonts[LSM3:Fetch("font", fontName)] = fontName
+    end
+  end
+  return fonts
 end
 
 local GetFontSizes = function()
-	local sizes = {}
-	for k,v in ipairs(CHAT_FONT_HEIGHTS) do
-		sizes[v] = v
-	end
-	return sizes
+  local sizes = {}
+  for k,v in ipairs(CHAT_FONT_HEIGHTS) do
+    sizes[v] = v
+  end
+  return sizes
 end
 
 local GetDifficulties = function()
-	local diffs,id = {[0]=_G.NONE}, 1
-	
-	for i=1,20 do
-		local name = GetDifficultyInfo(i)
-		if name and name ~= "" then
-			diffs[i] = name
-		end
-	end
-	--[[local name = GetDifficultyInfo(id) -- 5.3,5.4 have gaps in the ids
-	while (name and name ~= "") do
-		diffs[id] = name
-		id = id+1
-		name = GetDifficultyInfo(id)
-	end]]
-	return diffs
+  local diffs,id = {[0]=_G.NONE}, 1
+
+  for i=1,20 do
+    local name = GetDifficultyInfo(i)
+    if name and name ~= "" then
+      diffs[i] = name
+    end
+  end
+  --[[local name = GetDifficultyInfo(id) -- 5.3,5.4 have gaps in the ids
+  while (name and name ~= "") do
+    diffs[id] = name
+    id = id+1
+    name = GetDifficultyInfo(id)
+  end]]
+  return diffs
 end
 local getDiffDefaults = function()
-	local defaults,id = {[0]=true}, 1
-	for i=1,20 do
-		local name = GetDifficultyInfo(i)
-		if name and name ~= "" then
-			defaults[i] = true
-		end
-	end
-	--[[local name = GetDifficultyInfo(id)
-	while (name and name ~= "") do
-		defaults[id] = true
-		id = id+1
-		name = GetDifficultyInfo(id)
-	end]]
-	return defaults
+  local defaults,id = {[0]=true}, 1
+  for i=1,20 do
+    local name = GetDifficultyInfo(i)
+    if name and name ~= "" then
+      defaults[i] = true
+    end
+  end
+  --[[local name = GetDifficultyInfo(id)
+  while (name and name ~= "") do
+    defaults[id] = true
+    id = id+1
+    name = GetDifficultyInfo(id)
+  end]]
+  return defaults
 end
 
-local dataDefaults = { 
-	levelup = true,
-	achievement = true,
-	groupstatus = {["1solo"]=true,["2party"]=true,["3raid"]=true},
-	rares = true, 
-	repchange = true, 
-	delay1 = 1.2,  
-	delay2 = 2, 
-	debug = false, 
-	trade = true, 
-	firstkill = false, 
-	difficulty = getDiffDefaults(),
-	close = false, 
-	uihide = false, 
-	played = false, 
-	charpane = false, 
-	guildlevelup = true, 
-	guildachievement = true, 
-	challengemode = true,
-	battleground = true,
-	arena = true,
-	history = {}, 
-	delay3 = 20, 
-	timeLineEnable = false, 
-	garissonbuild = true,
-	watermark = false, 
-	watermarkformat = "$n($l) $c $b$z - $d$b$r", 
-	watermarkanchor = "TOP",
-	watermarkfont = STANDARD_TEXT_FONT,
-	watermarkfontsize = CHAT_FONT_HEIGHTS[3],
+local dataDefaults = {
+  levelup = true,
+  achievement = true,
+  groupstatus = {["1solo"]=true,["2party"]=true,["3raid"]=true},
+  rares = true,
+  repchange = true,
+  delay1 = 1.2,
+  delay2 = 2,
+  debug = false,
+  trade = true,
+  firstkill = false,
+  difficulty = getDiffDefaults(),
+  close = false,
+  uihide = false,
+  played = false,
+  charpane = false,
+  guildlevelup = true,
+  guildachievement = true,
+  challengemode = true,
+  battleground = true,
+  arena = true,
+  history = {},
+  delay3 = 20,
+  timeLineEnable = false,
+  garissonbuild = true,
+  watermark = false,
+  watermarkformat = "$n($l) $c $b$z - $d$b$r",
+  watermarkanchor = "TOP",
+  watermarkfont = STANDARD_TEXT_FONT,
+  watermarkfontsize = CHAT_FONT_HEIGHTS[3],
 }
 
 local dataOptions = {
@@ -99,13 +99,13 @@ local dataOptions = {
       type = "description",
       name = L["intro"] .. ":\n" },
     levelups = {
-      order = 1, 
+      order = 1,
       type = "toggle",
       name = L["levelups"],
       get = function() return MultishotConfig.levelup end,
       set = function(_,v) MultishotConfig.levelup = v end },
     guildlevelups = {
-      order = 2, 
+      order = 2,
       type = "toggle",
       name = L["guildlevelups"],
       get = function() return MultishotConfig.guildlevelup end,
@@ -123,11 +123,11 @@ local dataOptions = {
       get = function() return MultishotConfig.guildachievement end,
       set = function(_,v) MultishotConfig.guildachievement = v end },
     challengemode = {
-		  order = 5,
-		  type = "toggle",
-		  name = L["challengemode"],
-		  get = function() return MultishotConfig.challengemode end,
-		  set = function(_,v) MultishotConfig.challengemode = v end },
+      order = 5,
+      type = "toggle",
+      name = L["challengemode"],
+      get = function() return MultishotConfig.challengemode end,
+      set = function(_,v) MultishotConfig.challengemode = v end },
     battleground = {
       order = 6,
       type = "toggle",
@@ -153,11 +153,11 @@ local dataOptions = {
       get = function() return MultishotConfig.trade end,
       set = function(_,v) MultishotConfig.trade = v end },
     garissonbuild = {
-    	order = 10,
-    	type = "toggle",
-    	name = L["garissonbuild"],
-    	get = function() return MultishotConfig.garissonbuild end,
-    	set = function(_,v) MultishotConfig.garissonbuild = v end },    
+      order = 10,
+      type = "toggle",
+      name = L["garissonbuild"],
+      get = function() return MultishotConfig.garissonbuild end,
+      set = function(_,v) MultishotConfig.garissonbuild = v end },
     header1 = {
       order = 11,
       type = "header",
@@ -166,13 +166,13 @@ local dataOptions = {
       order = 12,
       type = "toggle",
       name = L["firstkills"],
-      get = function() return MultishotConfig.firstkill end, 
+      get = function() return MultishotConfig.firstkill end,
       set = function(_,v) MultishotConfig.firstkill = v end },
     rares = {
       order = 13,
       type = "toggle",
       name = L["rarekills"],
-      get = function() return MultishotConfig.rares end, 
+      get = function() return MultishotConfig.rares end,
       set = function(_,v) MultishotConfig.rares = v end },
     groupstatus = {
       order = 14,
@@ -192,22 +192,22 @@ local dataOptions = {
       order = 16,
       type = "header",
       name = L["timeline"] },
-		timeline = {
+    timeline = {
       order = 17,
       type = "toggle",
       name = L["timeLineEnable"],
       width = "double",
-      get = function() return MultishotConfig.timeLineEnable end, 
-      set = function(_,v) 
-      	MultishotConfig.timeLineEnable = v
-      	Multishot:TimeLineConfig(v)
+      get = function() return MultishotConfig.timeLineEnable end,
+      set = function(_,v)
+        MultishotConfig.timeLineEnable = v
+        Multishot:TimeLineConfig(v)
       end },
-		delay3 = {
+    delay3 = {
       order = 18,
       type = "range",
       name = L["delayTimeline"],
       min = 5, max = 60, step = 5,
-      get = function() return MultishotConfig.delay3 end, 
+      get = function() return MultishotConfig.delay3 end,
       set = function(_,v) MultishotConfig.delay3 = v end },
     header3 = {
       order = 19,
@@ -225,7 +225,7 @@ local dataOptions = {
       type = "range",
       name = L["delaykill"],
       min = .1, max = 10, step = .1,
-      get = function() return MultishotConfig.delay2 end, 
+      get = function() return MultishotConfig.delay2 end,
       set = function(_,v) MultishotConfig.delay2 = v end },
     header4 = {
       order = 22,
@@ -236,38 +236,38 @@ local dataOptions = {
       type = "select",
       name = L["format"],
       values = {["jpeg"] = L["jpeg"], ["png"] = L["png"], ["tga"] = L["tga"]},
-      get = function() return GetCVar("screenshotFormat") end, 
+      get = function() return GetCVar("screenshotFormat") end,
       set = function(_,v)SetCVar("screenshotFormat", v) end },
     quality = {
       order = 24,
       type = "range",
       name = L["quality"],
       min = 0, max = 10, step = 1,
-      get = function() return tonumber(GetCVar("screenshotQuality")) end, 
+      get = function() return tonumber(GetCVar("screenshotQuality")) end,
       set = function(_,v) SetCVar("screenshotQuality", v) end },
     close = {
       order = 25,
       type = "toggle",
       name = L["close"],
-      get = function() return MultishotConfig.close end, 
+      get = function() return MultishotConfig.close end,
       set = function(_,v) MultishotConfig.close = v end },
     uihide = {
       order = 26,
       type = "toggle",
       name = L["uihide"],
-      get = function() return MultishotConfig.uihide end, 
+      get = function() return MultishotConfig.uihide end,
       set = function(_,v) MultishotConfig.uihide = v end },
     played = {
       order = 27,
       type = "toggle",
       name = L["played"],
-      get = function() return MultishotConfig.played end, 
+      get = function() return MultishotConfig.played end,
       set = function(_,v) MultishotConfig.played = v end },
     charpane = {
       order = 28,
       type = "toggle",
       name = L["charpane"],
-      get = function() return MultishotConfig.charpane end, 
+      get = function() return MultishotConfig.charpane end,
       set = function(_,v) MultishotConfig.charpane = v end },
     watermark = {
       order = 29,
@@ -283,12 +283,12 @@ local dataOptions = {
       usage = L["clear the text and press Enter to restore defaults."],
       get = function() return MultishotConfig.watermarkformat end,
       set = function(_,v)
-    		print(tostring(v))
-    		if v == "" or not (v):find("[%w%p]+") or (v):find("\\n") then -- or (v):find("$[^nclzrdb]")
-    			v = "$n($l) $c $b$z - $d$b$r"
-    		end
-    		MultishotConfig.watermarkformat = v
-      end	},
+        print(tostring(v))
+        if v == "" or not (v):find("[%w%p]+") or (v):find("\\n") then -- or (v):find("$[^nclzrdb]")
+          v = "$n($l) $c $b$z - $d$b$r"
+        end
+        MultishotConfig.watermarkformat = v
+      end },
     watermarkanchor = {
       order = 31,
       type = "select",
@@ -324,7 +324,7 @@ local dataOptions = {
       order = 36,
       type = "toggle",
       name = L["debug"],
-      get = function() return MultishotConfig.debug end, 
+      get = function() return MultishotConfig.debug end,
       set = function(_,v) MultishotConfig.debug = v end },
     reset = {
       order = 37,
@@ -335,13 +335,13 @@ local dataOptions = {
 }
 
 function Multishot:TimeLineConfig(enable)
-	if enable then 
-  	Multishot.timeLineTimer = Multishot:ScheduleRepeatingTimer("TimeLineProgress",5) 
-  else 
-  	if Multishot.timeLineTimer then
-  		Multishot:CancelTimer(Multishot.timeLineTimer)
-		end
-	end
+  if enable then
+    Multishot.timeLineTimer = Multishot:ScheduleRepeatingTimer("TimeLineProgress",5)
+  else
+    if Multishot.timeLineTimer then
+      Multishot:CancelTimer(Multishot.timeLineTimer)
+    end
+  end
 end
 
 function Multishot:OnInitialize()

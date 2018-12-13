@@ -27,13 +27,13 @@ function Multishot:OnEnable()
   self:RegisterEvent("GARISSON_BUILDING_ACTIVATED")
   self:RegisterEvent("SCREENSHOT_FAILED", "Debug")
   if MultishotConfig.timeLineEnable then
-  	self.timeLineTimer = self:ScheduleRepeatingTimer("TimeLineProgress",5)
-  	timeLineStart, timeLineElapsed = GetTime(), 0
+    self.timeLineTimer = self:ScheduleRepeatingTimer("TimeLineProgress",5)
+    timeLineStart, timeLineElapsed = GetTime(), 0
   end
   local ssformat = GetCVar("screenshotFormat")
   extension = (ssformat == "tga") and ".tga" or (ssformat == "png") and ".png" or ".jpg"
   Multishot.watermarkFrame = Multishot.watermarkFrame or Multishot:CreateWatermark()
-    
+
   self:RegisterChatCommand("multishot", function()
     InterfaceOptionsFrame_OpenToCategory(Multishot.PrefPane)
   end)
@@ -59,70 +59,70 @@ function Multishot:TRADE_ACCEPT_UPDATE(strEvent, strPlayer, strTarget)
 end
 
 function Multishot:CHALLENGE_MODE_COMPLETED(strEvent)
-	if not MultishotConfig.challengemode then return end
-	local mapID, medal, completionTime, moneyAmount, numRewards = GetChallengeModeCompletionInfo()
-	if (medal) and CHALLENGE_MEDAL_TEXTURES[medal] then -- only take screenshot for bronze and up for now
-		self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent)
-	end
+  if not MultishotConfig.challengemode then return end
+  local mapID, medal, completionTime, moneyAmount, numRewards = GetChallengeModeCompletionInfo()
+  if (medal) and CHALLENGE_MEDAL_TEXTURES[medal] then -- only take screenshot for bronze and up for now
+    self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent)
+  end
 end
 
 function Multishot:UPDATE_BATTLEFIELD_STATUS(strEvent)
-	if not MultishotConfig.arena or MultishotConfig.battleground then return end
-	local winner = GetBattlefieldWinner()
-	if not winner then return end
-	local isArena, registered = IsActiveBattlefieldArena()
-	if (isArena) and not MultishotConfig.arena then return end
-	if isArena then
-		if IsInArenaTeam() then
-			if not PLAYER_FACTION_GROUP[winner] then -- draw, get our screenshot and bail
-				self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent)
-				return
-			end
-			local playerTeamId
-			for i=1, GetNumBattlefieldScores() do
-				local name, _, _, _, _, teamId = GetBattlefieldScore(i)
-				if name == player then
-					playerTeamId = teamId
-					break
-				end
-			end
-			if playerTeamId and playerTeamId == winner then
-				self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent)
-			end
-		end
-	else
-		if PLAYER_FACTION_GROUP[winner] == GetPlayerFactionGroup() then
-			self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent)
-		end
-	end
+  if not MultishotConfig.arena or MultishotConfig.battleground then return end
+  local winner = GetBattlefieldWinner()
+  if not winner then return end
+  local isArena, registered = IsActiveBattlefieldArena()
+  if (isArena) and not MultishotConfig.arena then return end
+  if isArena then
+    if IsInArenaTeam() then
+      if not PLAYER_FACTION_GROUP[winner] then -- draw, get our screenshot and bail
+        self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent)
+        return
+      end
+      local playerTeamId
+      for i=1, GetNumBattlefieldScores() do
+        local name, _, _, _, _, teamId = GetBattlefieldScore(i)
+        if name == player then
+          playerTeamId = teamId
+          break
+        end
+      end
+      if playerTeamId and playerTeamId == winner then
+        self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent)
+      end
+    end
+  else
+    if PLAYER_FACTION_GROUP[winner] == GetPlayerFactionGroup() then
+      self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent)
+    end
+  end
 end
 
 function Multishot:CHAT_MSG_SYSTEM(strEvent, strMessage)
   if MultishotConfig.repchange then
     if string.match(strMessage, strMatch) then
-      self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent) 
+      self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent)
     end
   end
 end
 
 function Multishot:CHAT_MSG_MONSTER_SAY(strEvent, strBuilding, arg2, arg3, arg4, strPlayer)
-	if MultishotConfig.timeLineEnable then timeLineStart,timeLineElapsed = GetTime(),0 end
+  if MultishotConfig.timeLineEnable then timeLineStart,timeLineElapsed = GetTime(),0 end
 -- 6.02  TakeScreenshot()
   Screenshot()
-	self:UnregisterEvent("CHAT_MSG_MONSTER_SAY")
+  self:UnregisterEvent("CHAT_MSG_MONSTER_SAY")
 end
 
 function Multishot:TIME_PLAYED_MSG(strEvent, total, thislevel)
-	if MultishotConfig.timeLineEnable then timeLineStart,timeLineElapsed = GetTime(),0 end
+  if MultishotConfig.timeLineEnable then timeLineStart,timeLineElapsed = GetTime(),0 end
 -- 6.02  TakeScreenshot()
   Screenshot()
   self:UnregisterEvent("TIME_PLAYED_MSG")
 end
 
 function Multishot:GARISSON_BUILDING_ACTIVATED(strEvent, arg1, arg2)
-	if MultishotConfig.garissonbuild then
-		self:RegisterEvent("CHAT_MSG_MONSTER_SAY")
-	end
+  if MultishotConfig.garissonbuild then
+    self:RegisterEvent("CHAT_MSG_MONSTER_SAY")
+  end
 end
 
 function Multishot:COMBAT_LOG_EVENT_UNFILTERED(strEvent, ...)
@@ -168,78 +168,78 @@ function Multishot:SCREENSHOT_SUCCEEDED(strEvent)
 end
 
 function Multishot:RefreshWatermark(show)
-	if not show then Multishot.watermarkFrame:Hide() return end
+  if not show then Multishot.watermarkFrame:Hide() return end
 
-	local anchor = MultishotConfig.watermarkanchor
-	Multishot.watermarkFrame:ClearAllPoints()
-	Multishot.watermarkFrame:SetPoint(anchor)
+  local anchor = MultishotConfig.watermarkanchor
+  Multishot.watermarkFrame:ClearAllPoints()
+  Multishot.watermarkFrame:SetPoint(anchor)
 
-	Multishot.watermarkFrame.Text:ClearAllPoints()
-	Multishot.watermarkFrame.Text:SetPoint("CENTER",Multishot.watermarkFrame,"CENTER")
-	Multishot.watermarkFrame.Text:SetJustifyH("CENTER")
-	
-	local text = MultishotConfig.watermarkformat
-	local level = UnitLevel("player")
-	local zone = GetRealZoneText()
-	local tdate = date()
+  Multishot.watermarkFrame.Text:ClearAllPoints()
+  Multishot.watermarkFrame.Text:SetPoint("CENTER",Multishot.watermarkFrame,"CENTER")
+  Multishot.watermarkFrame.Text:SetJustifyH("CENTER")
 
-	text = text:gsub("$n", player)
-	text = text:gsub("$l", level)
-	text = text:gsub("$c", class)
-	text = text:gsub("$z", zone)
-	text = text:gsub("$r", realm)
-	text = text:gsub("$d", tdate)
-	text = text:gsub("$b","\n" )
-	
-	Multishot.watermarkFrame.Text:SetFont(MultishotConfig.watermarkfont, MultishotConfig.watermarkfontsize, "OUTLINE")
-	Multishot.watermarkFrame.Text:SetFormattedText("%s%s%s",YELLOW_FONT_COLOR_CODE,text,FONT_COLOR_CODE_CLOSE)
-	
-	Multishot.watermarkFrame:Show()
+  local text = MultishotConfig.watermarkformat
+  local level = UnitLevel("player")
+  local zone = GetRealZoneText()
+  local tdate = date()
+
+  text = text:gsub("$n", player)
+  text = text:gsub("$l", level)
+  text = text:gsub("$c", class)
+  text = text:gsub("$z", zone)
+  text = text:gsub("$r", realm)
+  text = text:gsub("$d", tdate)
+  text = text:gsub("$b","\n" )
+
+  Multishot.watermarkFrame.Text:SetFont(MultishotConfig.watermarkfont, MultishotConfig.watermarkfontsize, "OUTLINE")
+  Multishot.watermarkFrame.Text:SetFormattedText("%s%s%s",YELLOW_FONT_COLOR_CODE,text,FONT_COLOR_CODE_CLOSE)
+
+  Multishot.watermarkFrame:Show()
 end
 
 function Multishot:CreateWatermark()
-	local f = CreateFrame("Frame", "MultishotWatermark", WorldFrame)
-	f:SetFrameStrata("TOOLTIP")
-	f:SetFrameLevel(0)
-	f:SetWidth(350)
-	f:SetHeight(100)
-	
-	f.Text = f:CreateFontString(nil, "OVERLAY")
-	f.Text:SetShadowOffset(1, -1)
-	
-	return f
+  local f = CreateFrame("Frame", "MultishotWatermark", WorldFrame)
+  f:SetFrameStrata("TOOLTIP")
+  f:SetFrameLevel(0)
+  f:SetWidth(350)
+  f:SetHeight(100)
+
+  f.Text = f:CreateFontString(nil, "OVERLAY")
+  f.Text:SetShadowOffset(1, -1)
+
+  return f
 end
 
 function Multishot:TimeLineProgress()
-	local now = GetTime()
-	timeLineStart = timeLineStart or now
-	timeLineElapsed = timeLineElapsed or 0
-	if UnitIsAFK("player") then
-		timeLineStart = now - timeLineElapsed
-	else
-		timeLineElapsed = now - timeLineStart
-	end
-	if timeLineElapsed >= (MultishotConfig.delay3 * 60) then
-		self:ScheduleTimer("CustomScreenshot", 0.2, L["timeline"])
-	end
+  local now = GetTime()
+  timeLineStart = timeLineStart or now
+  timeLineElapsed = timeLineElapsed or 0
+  if UnitIsAFK("player") then
+    timeLineStart = now - timeLineElapsed
+  else
+    timeLineElapsed = now - timeLineStart
+  end
+  if timeLineElapsed >= (MultishotConfig.delay3 * 60) then
+    self:ScheduleTimer("CustomScreenshot", 0.2, L["timeline"])
+  end
 end
 
 function Multishot:CustomScreenshot(strDebug)
   self:Debug(strDebug)
   self:RegisterEvent("SCREENSHOT_SUCCEEDED")
-  if MultishotConfig.charpane and not PaperDollFrame:IsVisible() then 
-  	ToggleCharacter("PaperDollFrame")
-  	if not PaperDollFrame:IsVisible() then
-  		self:ScheduleTimer("CustomScreenshot", 0.2, "RETRY")
-  	end
+  if MultishotConfig.charpane and not PaperDollFrame:IsVisible() then
+    ToggleCharacter("PaperDollFrame")
+    if not PaperDollFrame:IsVisible() then
+      self:ScheduleTimer("CustomScreenshot", 0.2, "RETRY")
+    end
   end
   if MultishotConfig.close and strDebug ~= "TRADE_ACCEPT_UPDATE" then CloseAllWindows() end
-  if MultishotConfig.uihide and 
-  (string.find(strDebug, "PLAYER_REGEN_ENABLED") 
-  or string.find(strDebug, "UNIT_DIED") 
+  if MultishotConfig.uihide and
+  (string.find(strDebug, "PLAYER_REGEN_ENABLED")
+  or string.find(strDebug, "UNIT_DIED")
   or string.find(strDebug, "PARTY_KILL")
-  or string.find(strDebug, "CHALLENGE_MODE_COMPLETED") 
-  or string.find(strDebug, "PLAYER_LEVEL_UP") 
+  or string.find(strDebug, "CHALLENGE_MODE_COMPLETED")
+  or string.find(strDebug, "PLAYER_LEVEL_UP")
   or string.find(strDebug, L["timeline"])
   or string.find(strDebug, KEY_BINDING)) then
     self:UIToggle()
@@ -252,27 +252,27 @@ function Multishot:CustomScreenshot(strDebug)
 end
 
 function Multishot:UIToggle(show)
-	if not show then
-		intAlpha = UIParent:GetAlpha()
- 		minimapStatus = Minimap:IsShown()
--- 		if minimapStatus then Minimap:Hide() end -- taints if called in combat
-		UIParent:SetAlpha(0)
-	else
-		if intAlpha and intAlpha > 0 then
-			UIParent:SetAlpha(intAlpha)
-			intAlpha = nil
-		else
-			UIParent:SetAlpha(1)
-		end
--- 		if minimapStatus then Minimap:Show() end
-	end
+  if not show then
+    intAlpha = UIParent:GetAlpha()
+    minimapStatus = Minimap:IsShown()
+--    if minimapStatus then Minimap:Hide() end -- taints if called in combat
+    UIParent:SetAlpha(0)
+  else
+    if intAlpha and intAlpha > 0 then
+      UIParent:SetAlpha(intAlpha)
+      intAlpha = nil
+    else
+      UIParent:SetAlpha(1)
+    end
+--    if minimapStatus then Minimap:Show() end
+  end
 end
 
 function Multishot:Debug(strMessage)
-	if strMessage == "SCREENSHOT_FAILED" then
-		self:UIToggle(true)
-		self:RefreshWatermark(false)
-	end
+  if strMessage == "SCREENSHOT_FAILED" then
+    self:UIToggle(true)
+    self:RefreshWatermark(false)
+  end
   if MultishotConfig.debug then self:Print(strMessage) end
 end
 
