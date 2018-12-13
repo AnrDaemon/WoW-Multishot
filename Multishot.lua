@@ -107,13 +107,15 @@ end
 
 function Multishot:CHAT_MSG_MONSTER_SAY(strEvent, strBuilding, arg2, arg3, arg4, strPlayer)
 	if MultishotConfig.timeLineEnable then timeLineStart,timeLineElapsed = GetTime(),0 end
-	TakeScreenshot()
+-- 6.02  TakeScreenshot()
+  Screenshot()
 	self:UnregisterEvent("CHAT_MSG_MONSTER_SAY")
 end
 
 function Multishot:TIME_PLAYED_MSG(strEvent, total, thislevel)
 	if MultishotConfig.timeLineEnable then timeLineStart,timeLineElapsed = GetTime(),0 end
-  TakeScreenshot()
+-- 6.02  TakeScreenshot()
+  Screenshot()
   self:UnregisterEvent("TIME_PLAYED_MSG")
 end
 
@@ -245,7 +247,8 @@ function Multishot:CustomScreenshot(strDebug)
   if MultishotConfig.watermark then self:RefreshWatermark(true) end
   if MultishotConfig.played and (strDebug == "PLAYER_LEVEL_UP" or strDebug == "ACHIEVEMENT_EARNED" or strDebug == "CHAT_MSG_SYSTEM" or strDebug == "CHAT_MSG_MONSTER_SAY" or strDebug == KEY_BINDING) and strDebug ~= "TIME_PLAYED_MSG" then self:RegisterEvent("TIME_PLAYED_MSG") RequestTimePlayed() return end
   if MultishotConfig.timeLineEnable then timeLineStart,timeLineElapsed = GetTime(),0 end
-  TakeScreenshot()
+-- 6.02  TakeScreenshot()
+  Screenshot()
 end
 
 function Multishot:UIToggle(show)
