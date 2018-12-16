@@ -25,6 +25,7 @@ function Multishot:OnEnable()
   self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
   self:RegisterEvent("PLAYER_REGEN_ENABLED")
   self:RegisterEvent("GARRISON_BUILDING_ACTIVATED", "GARISSON_BUILDING_ACTIVATED")
+  self:RegisterEvent("ISLAND_COMPLETED")
   self:RegisterEvent("SCREENSHOT_FAILED", "Debug")
   if MultishotConfig.timeLineEnable then
     self.timeLineTimer = self:ScheduleRepeatingTimer("TimeLineProgress",5)
@@ -149,6 +150,13 @@ function Multishot:PLAYER_REGEN_ENABLED(strEvent)
   if isDelayed then
     self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay2, strEvent .. isDelayed)
     isDelayed = nil
+  end
+end
+
+function Multishot:ISLAND_COMPLETED(strEvent)
+  if true then
+--  if MultishotConfig.levelup then
+    self:ScheduleTimer("CustomScreenshot", MultishotConfig.delay1, strEvent)
   end
 end
 
