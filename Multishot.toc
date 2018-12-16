@@ -1,4 +1,4 @@
-## Interface: 80000
+## Interface: 80100
 ## Title: Multishot
 ## Author: dlui & dridzt
 ## Version: @project-version@
